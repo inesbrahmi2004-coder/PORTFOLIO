@@ -142,7 +142,27 @@ footer{text-align:center;padding:2rem;font-size:.78rem;color:var(--muted);positi
 </style>
 </head>
 <body>
-
+<canvas id="space-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;background:#050816;"></canvas>
+<script>
+(function(){
+  const c=document.getElementById('space-bg'),x=c.getContext('2d');
+  let w,h,dpr;
+  function rz(){dpr=window.devicePixelRatio||1;w=innerWidth;h=innerHeight;c.width=w*dpr;c.height=h*dpr;x.setTransform(dpr,0,0,dpr,0,0);}
+  rz();addEventListener('resize',rz);
+  const N=90,s=[];
+  for(let i=0;i<N;i++)s.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,r:Math.random()*1.6+.6});
+  const m={x:-999,y:-999};
+  addEventListener('mousemove',e=>{m.x=e.clientX;m.y=e.clientY;});
+  function step(){
+    x.clearRect(0,0,w,h);
+    for(const p of s){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;}
+    for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){const a=s[i],b=s[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.hypot(dx,dy);if(d<110){x.strokeStyle='rgba(93,202,165,'+(1-d/110)*.35+')';x.lineWidth=.6;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();}}
+    for(const p of s){const md=Math.hypot(p.x-m.x,p.y-m.y);if(md<140){x.strokeStyle='rgba(133,183,235,'+(1-md/140)*.5+')';x.lineWidth=.7;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(m.x,m.y);x.stroke();}x.fillStyle='rgba(230,241,251,.9)';x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fill();}
+    requestAnimationFrame(step);
+  }
+  step();
+})();
+</script>
 <nav>
   <div class="nav-logo">IB.</div>
   <ul class="nav-links">
