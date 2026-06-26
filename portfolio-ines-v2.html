@@ -141,7 +141,61 @@ footer{text-align:center;padding:2rem;font-size:.78rem;color:var(--muted);positi
 }
 </style>
 </head>
-<body>
+<body> 
+  <section id="rocket-section">
+  <div style="position:relative; max-width:900px; margin:40px auto; height:380px; border-radius:12px; overflow:hidden; background:linear-gradient(#050816,#0a1228);">
+    <canvas id="rkt-canvas" style="display:block; width:100%; height:100%;"></canvas>
+    <div style="position:absolute; top:22px; left:28px; pointer-events:none;">
+      <p style="margin:0; font-size:13px; letter-spacing:2px; color:#5DCAA5; text-transform:uppercase;">Ines Brahmi</p>
+      <p style="margin:4px 0 0; font-size:22px; font-weight:500; color:#E6F1FB;">Cap sur l'aérospatial</p>
+    </div>
+    <button id="rkt-btn" style="position:absolute; bottom:18px; left:50%; transform:translateX(-50%); background:#1D9E75; color:#04342C; border:none; padding:9px 22px; border-radius:8px; font-size:14px; font-weight:500; cursor:pointer;">Relancer le décollage</button>
+  </div>
+  <script>
+  (function(){
+    const canvas=document.getElementById('rkt-canvas');
+    const ctx=canvas.getContext('2d');
+    let w,h,dpr;
+    function resize(){dpr=window.devicePixelRatio||1;const r=canvas.getBoundingClientRect();w=r.width;h=r.height;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}
+    resize();window.addEventListener('resize',resize);
+    const bgStars=[];
+    for(let i=0;i<60;i++)bgStars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.3+0.3,tw:Math.random()*Math.PI*2});
+    let rocketY,vel,particles,launched,t;
+    function reset(){rocketY=h-90;vel=0;particles=[];launched=true;t=0;}
+    reset();
+    function drawRocket(x,y){
+      ctx.save();ctx.translate(x,y);
+      ctx.fillStyle='#E6F1FB';
+      ctx.beginPath();ctx.moveTo(0,-26);ctx.quadraticCurveTo(9,-10,9,8);ctx.lineTo(-9,8);ctx.quadraticCurveTo(-9,-10,0,-26);ctx.fill();
+      ctx.fillStyle='#378ADD';ctx.beginPath();ctx.arc(0,-8,3.4,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#D85A30';
+      ctx.beginPath();ctx.moveTo(-9,8);ctx.lineTo(-16,18);ctx.lineTo(-9,2);ctx.closePath();ctx.fill();
+      ctx.beginPath();ctx.moveTo(9,8);ctx.lineTo(16,18);ctx.lineTo(9,2);ctx.closePath();ctx.fill();
+      ctx.restore();
+    }
+    function step(){
+      ctx.clearRect(0,0,w,h);t++;
+      for(const s of bgStars){s.tw+=0.03;const a=0.4+Math.sin(s.tw)*0.35;ctx.fillStyle='rgba(230,241,251,'+a+')';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();}
+      if(launched){
+        vel+=0.12;rocketY-=vel;const ex=w/2;
+        for(let k=0;k<3;k++)particles.push({x:ex+(Math.random()-0.5)*10,y:rocketY+16,vx:(Math.random()-0.5)*1.2,vy:Math.random()*2+1.5,life:1,size:Math.random()*7+4,fire:Math.random()<0.55});
+        if(rocketY<-40){setTimeout(reset,600);launched=false;}
+      }
+      for(let i=particles.length-1;i>=0;i--){
+        const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.life-=0.018;p.size*=0.985;
+        if(p.life<=0){particles.splice(i,1);continue;}
+        if(p.fire)ctx.fillStyle='rgba(240,'+Math.round(140+p.life*60)+',40,'+p.life+')';
+        else ctx.fillStyle='rgba(200,205,215,'+p.life*0.4+')';
+        ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();
+      }
+      if(launched)drawRocket(w/2,rocketY);
+      requestAnimationFrame(step);
+    }
+    step();
+    document.getElementById('rkt-btn').addEventListener('click',reset);
+  })();
+  </script>
+</section>
 <canvas id="space-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;background:#050816;"></canvas>
 <script>
 (function(){
