@@ -261,7 +261,46 @@ footer{text-align:center;padding:2rem;font-size:.78rem;color:var(--muted);positi
 </section>
 
 <div class="divider"></div>
-
+<section id="soft-skills">
+  <div class="container">
+    <p style="font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#0F6E56;margin:0 0 4px;">Savoir-être</p>
+    <h2 style="font-size:28px;font-weight:500;margin:0 0 28px;">Qualités personnelles</h2>
+    <div id="skills-soft" style="max-width:640px;"></div>
+  </div>
+  <script>
+  (function(){
+    const data = [
+      {name:"Travail en équipe", val:90, color:"#1D9E75"},
+      {name:"Autonomie", val:85, color:"#378ADD"},
+      {name:"Rigueur & organisation", val:88, color:"#7F77DD"},
+      {name:"Adaptabilité", val:80, color:"#BA7517"},
+      {name:"Esprit d'analyse", val:85, color:"#D85A30"},
+      {name:"Communication", val:78, color:"#D4537E"}
+    ];
+    const root = document.getElementById('skills-soft');
+    data.forEach(d=>{
+      const wrap = document.createElement('div');
+      wrap.style.marginBottom = '18px';
+      wrap.innerHTML =
+        '<div style="display:flex;justify-content:space-between;margin-bottom:6px;">'+
+          '<span style="font-size:14px;">'+d.name+'</span>'+
+          '<span style="font-size:13px;color:'+d.color+';font-weight:500;" class="pct">0%</span>'+
+        '</div>'+
+        '<div style="height:8px;background:rgba(0,0,0,0.08);border-radius:6px;overflow:hidden;">'+
+          '<div class="bar" style="height:100%;width:0%;background:'+d.color+';border-radius:6px;transition:width 1.4s cubic-bezier(.22,1,.36,1);"></div>'+
+        '</div>';
+      root.appendChild(wrap);
+      const bar = wrap.querySelector('.bar');
+      const pct = wrap.querySelector('.pct');
+      setTimeout(()=>{
+        bar.style.width = d.val+'%';
+        let n=0;
+        const t=setInterval(()=>{ n+=2; if(n>=d.val){n=d.val;clearInterval(t);} pct.textContent=n+'%'; }, 28);
+      }, 200);
+    });
+  })();
+  </script>
+</section>
 <section id="projects">
   <div class="container fi">
     <p class="s-lbl">Projets</p>
